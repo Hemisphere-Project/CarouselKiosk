@@ -1,29 +1,36 @@
 <!DOCTYPE html>
 <html lang="fr">
-  <head>
+
+<head>
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>CarouselKiosk</title>
-    
-    <link rel="stylesheet" href="style.css" />
-    <link rel="icon" href="images/carousel.png" />
+
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="libs/jquery-3.5.1.min.js"></script>
 
-    <link rel="stylesheet" href="libs/slick.css" />
-    <link rel="stylesheet" href="libs/slick-theme.css" />
-    <script src="libs/slick.min.js"></script>
+    <!-- <link rel="stylesheet" href="libs/slick.css" />
+      <link rel="stylesheet" href="libs/slick-theme.css" />
+      <script src="libs/slick.min.js"></script> -->
 
-  </head>
+    <link rel="stylesheet" href="libs/flickity.css" media="screen">
+    <link rel="stylesheet" href="libs/flickity-fade.css" media="screen">
+    <script src="libs/flickity.pkgd.min.js"></script>
+    <script src="libs/flickity-fade.js"></script>
 
-  <body>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" href="images/carousel.png" />
+</head>
 
-    <div id="alldivs"></div>
+<body>
+
+    <div id="alldivs" class="main-carousel"></div>
 
 
     <script src="scripts.js"></script>
-  </body>
+</body>
+
 </html>
