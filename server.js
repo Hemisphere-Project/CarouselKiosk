@@ -7,7 +7,7 @@ const fs = require('fs')
 const os = require('os')
 
 // Media
-var mediapath = "/data/" + os.hostname()
+var mediapath = "/data/media" //+ os.hostname()
 var ext_images = ['jpg', 'jpeg', 'png', 'gif']
 var ext_videos = ['mp4']
 
@@ -28,7 +28,7 @@ function mediaList() {
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/www/index.html');
 });
-app.use(express.static('www'))
+app.use(express.static(__dirname + '/www'))
 app.use('/media', express.static(mediapath))
 
 // Socketio
