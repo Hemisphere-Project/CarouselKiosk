@@ -8,7 +8,7 @@ const fs = require('fs')
 const os = require('os')
 
 // Media
-var mediapath = "/data/media2" //+ os.hostname()
+var mediapath = "/data/media" //+ os.hostname()
 var ext_images = ['jpg', 'jpeg', 'png', 'gif']
 var ext_videos = ['mp4']
 
