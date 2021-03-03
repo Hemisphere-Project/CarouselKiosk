@@ -36,6 +36,10 @@ socket.on('tree', function(data) {
                 var video = $('<video>').addClass("media")
                 $('<source>').attr('src', '/media/' + lang + '/' + m[0]).attr('type', 'video/mp4').appendTo(video)
                 $('<div>').addClass('carousel-cell').append(video).appendTo(gallery)
+
+                video.on('ended', () => {
+                    setTimeout(() => { $('.main-carousel.is-active').flickity('next') }, 300)
+                })
             }
         }
 
@@ -73,16 +77,16 @@ socket.on('tree', function(data) {
 
             // Lang btn
             $('<div>').addClass('lang-item').html(l).appendTo(menu).on('click touchstart', () => {
-                $('.main-carousel').hide()
-                $('.carousel-' + l.replace(' ', '')).show().flickity('next')
+                $('.main-carousel').hide().removeClass('is-active')
+                $('.carousel-' + l.replace(' ', '')).show().flickity('select', 1).addClass('is-active')
             })
         }
 
         $(entry).find('.carousel-cell').first().append(menu)
     });
 
-    $('.main-carousel').hide()
-    $('.main-carousel').first().show()
+    $('.main-carousel').hide().removeClass('is-active')
+    $('.main-carousel').first().show().addClass('is-active')
 
 });
 
@@ -101,8 +105,7 @@ var inactivityTime = function() {
 
     function timerElapsed() {
         console.log("Timer elapsed");
-        $('.main-carousel').hide()
-        $('.main-carousel').first().show().flickity('select', 0)
+        $('.main-carousel').flickity('select', 0)
     };
 
     function timerReset() {
