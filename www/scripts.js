@@ -1,43 +1,88 @@
+function isNumeric(str) {
+    if (typeof str != "string") return false // we only process strings!  
+    return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
+        !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
+}
+
+
 var socket = io();
 
-socket.on('list', function(data) {
-    $('#alldivs').empty()
+socket.on('tree', function(data) {
+    $('#mainframe').empty()
 
-    for (let m of data) {
-        console.log(m)
-        if (m[1] == 'image') {
-            var img = $('<img />').addClass("media").attr('src', '/media/' + m[0])
-            $('<div>').addClass('carousel-cell').append(img).appendTo('#alldivs')
-        } else if (m[1] == 'video') {
-            var video = $('<video>').addClass("media")
-            $('<source>').attr('src', '/media/' + m[0]).attr('type', 'video/mp4').appendTo(video)
-            $('<div>').addClass('carousel-cell').append(video).appendTo('#alldivs')
+    // Accueil
+    var accueil = $('<div>').addClass('accueil').appendTo('#mainframe')
+
+
+
+    for (let lang in data) {
+
+        // remove x_ 
+        let l = lang
+        if (isNumeric(l.split('_')[0])) l = l.split('_')[1]
+
+        // Carousel
+        let gallery = $('<div>').addClass('main-carousel carousel-' + l.replace(' ', '')).appendTo('#mainframe')
+
+
+
+        // Fill with media
+        for (let m of data[lang]) {
+            console.log(m)
+            if (m[1] == 'image') {
+                var img = $('<img />').addClass("media").attr('src', '/media/' + lang + '/' + m[0])
+                $('<div>').addClass('carousel-cell').append(img).appendTo(gallery)
+            } else if (m[1] == 'video') {
+                var video = $('<video>').addClass("media")
+                $('<source>').attr('src', '/media/' + lang + '/' + m[0]).attr('type', 'video/mp4').appendTo(video)
+                $('<div>').addClass('carousel-cell').append(video).appendTo(gallery)
+            }
         }
+
+        var carousel = $('.main-carousel').flickity({
+            // options
+            cellAlign: 'left',
+            pageDots: false,
+            contain: true,
+            selectedAttraction: 0.1,
+            friction: 0.8,
+            // fade: true
+        });
+
+        carousel.on('change.flickity', function(event, index) {
+            $('video').each((i, d) => {
+                d.pause()
+                d.currentTime = 0
+            })
+            $('.carousel-cell.is-selected').find('video').each((i, d) => {
+                d.play()
+            })
+        });
 
     }
 
-    // $('#alldivs').slick({
-    //     infinite: false,
-    // });
-    var carousel = $('.main-carousel').flickity({
-        // options
-        cellAlign: 'left',
-        pageDots: true,
-        contain: true,
-        selectedAttraction: 0.1,
-        friction: 0.8,
-        // fade: true
+
+    // Add menu to first media of each gallery
+    $('.main-carousel').get().forEach(function(entry, index, array) {
+        var menu = $('<div>').addClass('lang-menu').appendTo(accueil)
+
+        for (let lang in data) {
+            // remove x_ 
+            let l = lang
+            if (isNumeric(l.split('_')[0])) l = l.split('_')[1]
+
+            // Lang btn
+            $('<div>').addClass('lang-item').html(l).appendTo(menu).on('click touchstart', () => {
+                $('.main-carousel').hide()
+                $('.carousel-' + l.replace(' ', '')).show().flickity('next')
+            })
+        }
+
+        $(entry).find('.carousel-cell').first().append(menu)
     });
 
-    carousel.on('change.flickity', function(event, index) {
-        $('video').each((i, d) => {
-            d.pause()
-        })
-        $('.carousel-cell.is-selected').find('video').each((i, d) => {
-            console.log(d)
-            d.play()
-        })
-    });
+    $('.main-carousel').hide()
+    $('.main-carousel').first().show()
 
 });
 
@@ -56,13 +101,14 @@ var inactivityTime = function() {
 
     function timerElapsed() {
         console.log("Timer elapsed");
-        location.reload();
+        $('.main-carousel').hide()
+        $('.main-carousel').first().show().flickity('select', 0)
     };
 
     function timerReset() {
-        console.log("Reseting timer");
+        // console.log("Reseting timer");
         clearTimeout(timer);
-        timer = setTimeout(timerElapsed, 1 * 10 * 1000); // 1 mins
+        timer = setTimeout(timerElapsed, 1 * 60 * 1000); // 1 mins
     }
 };
-// inactivityTime()
+inactivityTime()

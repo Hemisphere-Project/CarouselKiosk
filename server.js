@@ -3,26 +3,55 @@ var app = express();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 
+const { readdirSync } = require('fs')
 const fs = require('fs')
 const os = require('os')
 
 // Media
-var mediapath = "/data/media" //+ os.hostname()
+var mediapath = "/data/media2" //+ os.hostname()
 var ext_images = ['jpg', 'jpeg', 'png', 'gif']
 var ext_videos = ['mp4']
 
-function mediaList() {
-    var liste = []
-    fs.readdirSync(mediapath)
-        .filter(f => !fs.lstatSync(mediapath + '/' + f).isDirectory())
-        .filter(f => !f.startsWith('.'))
-        .forEach(f => {
-            var ext = f.replace(/.*\./, '').toLowerCase();
-            if (ext_images.indexOf(ext) >= 0) liste.push([f, 'image'])
-            else if (ext_videos.indexOf(ext) >= 0) liste.push([f, 'video'])
-        })
-    return liste
+function isVideo(path) {
+    return (ext_videos.indexOf(path.replace(/.*\./, '').toLowerCase()) >= 0)
 }
+
+function isImage(path) {
+    return (ext_images.indexOf(path.replace(/.*\./, '').toLowerCase()) >= 0)
+}
+
+function isMedia(path) {
+    return isImage(path) || isVideo(path)
+}
+
+
+
+// List directories
+const getDirectories = source =>
+    readdirSync(source, { withFileTypes: true })
+    .filter(dirent => dirent.isDirectory())
+    .map(dirent => dirent.name)
+
+const getMedias = source =>
+    readdirSync(source, { withFileTypes: true })
+    .filter(dirent => !dirent.isDirectory())
+    .map(dirent => dirent.name)
+    .filter(dirent => isMedia(dirent))
+
+function treeList(path) {
+    var tree = {}
+    for (let c of getDirectories(path)) {
+        tree[c] = []
+        getMedias(path + '/' + c)
+            .forEach(f => {
+                if (isImage(f)) tree[c].push([f, 'image'])
+                else if (isVideo(f)) tree[c].push([f, 'video'])
+            })
+    }
+    // console.log(tree)
+    return tree
+}
+
 
 // Server
 app.get('/', (req, res) => {
@@ -36,7 +65,7 @@ io.on('connection', (socket) => {
     console.log('a user connected');
 
     // Send list
-    socket.emit('list', mediaList())
+    socket.emit('tree', treeList(mediapath))
 
     socket.on('disconnect', () => {
         console.log('user disconnected');
