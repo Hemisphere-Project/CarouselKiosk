@@ -24,7 +24,9 @@ socket.on('tree', function(data) {
         // Carousel
         let gallery = $('<div>').addClass('main-carousel carousel-' + l.replace(' ', '')).appendTo('#mainframe')
 
-
+        // Push accueil slide
+        var img = $('<img />').addClass("media").attr('src', '/media/accueil.jpg')
+        $('<div>').addClass('carousel-cell').append(img).appendTo(gallery)
 
         // Fill with media
         for (let m of data[lang]) {

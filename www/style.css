@@ -127,11 +127,28 @@ body {
 
 /* prev / next buttons */
 
-.flickity-button {
-    display: none;
+.flickity-prev-next-button,
+.flickity-prev-next-button:hover {
+    /* display: none; */
     background-color: transparent;
+    background-size: contain;
+    background-image: url('images/back.png');
+    background-repeat: no-repeat;
+    border-radius: 0;
+}
+
+.flickity-prev-next-button.next {
+    transform: rotate(180deg);
+}
+
+.flickity-button:active {
+    opacity: 0.5;
 }
 
 .flickity-button:disabled {
     opacity: 0;
+}
+
+.flickity-button-icon {
+    display: none;
 }
