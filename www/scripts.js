@@ -35,13 +35,30 @@ socket.on('tree', function(data) {
                 var img = $('<img />').addClass("media").attr('src', '/media/' + lang + '/' + m[0])
                 $('<div>').addClass('carousel-cell').append(img).appendTo(gallery)
             } else if (m[1] == 'video') {
+
+                // Video
                 var video = $('<video>').addClass("media")
                 $('<source>').attr('src', '/media/' + lang + '/' + m[0]).attr('type', 'video/mp4').appendTo(video)
-                $('<div>').addClass('carousel-cell').append(video).appendTo(gallery)
+
+                // Progress bar
+                var progressbar = $('<div>').addClass('bar')
+                var progress = $('<div>').addClass('progress').append(progressbar)
+                $('<div>').addClass('carousel-cell').append(video).append(progress).appendTo(gallery)
+
+
 
                 video.on('ended', () => {
                     setTimeout(() => { $('.main-carousel.is-active').flickity('next') }, 300)
                 })
+
+                var lastTime = (new Date()).getTime();
+                video.on('timeupdate', () => {
+                    var now = (new Date()).getTime()
+                    const percent = (video[0].currentTime / video[0].duration) * 100
+                    progressbar.finish()
+                    progressbar.animate({ 'width': percent + '%' }, now - lastTime, 'linear')
+                    lastTime = now
+                });
             }
         }
 
@@ -56,6 +73,7 @@ socket.on('tree', function(data) {
         });
 
         carousel.on('change.flickity', function(event, index) {
+            // VIDEO playback
             $('video').each((i, d) => {
                 d.pause()
                 d.currentTime = 0
@@ -63,7 +81,30 @@ socket.on('tree', function(data) {
             $('.carousel-cell.is-selected').find('video').each((i, d) => {
                 d.play()
             })
+
+            // Hide NEXT on first
+            if (index > 0) $('.flickity-prev-next-button.next').show()
+            else $('.flickity-prev-next-button.next').hide()
+
+            // Hide PREV on second
+            if (index > 1) $('.flickity-prev-next-button.previous').show()
+            else $('.flickity-prev-next-button.previous').hide()
+
+            // CLOSE
+            $('.flickity-prev-next-button.next:disabled').prop('disabled', false)
+
+            $('.close').unbind()
+
+            var flkty = carousel.data('flickity')
+            if (flkty.selectedIndex == flkty.cells.length - 1) $('.flickity-prev-next-button.next').addClass('close')
+            else $('.flickity-prev-next-button.next').removeClass('close')
+                // console.log(flkty.selectedIndex, flkty.cells.length - 1)
+
+            $('.close').on('click touchstart', function(e) {
+                $('.main-carousel').flickity('select', 0)
+            });
         });
+
 
     }
 
@@ -80,6 +121,7 @@ socket.on('tree', function(data) {
             // Lang btn
             $('<div>').addClass('lang-item').html(l).appendTo(menu).on('click touchstart', () => {
                 $('.main-carousel').hide().removeClass('is-active')
+                $('.flickity-prev-next-button.next').hide()
                 $('.carousel-' + l.replace(' ', '')).show().flickity('select', 1).addClass('is-active')
             })
         }
@@ -89,6 +131,9 @@ socket.on('tree', function(data) {
 
     $('.main-carousel').hide().removeClass('is-active')
     $('.main-carousel').first().show().addClass('is-active')
+    $('.flickity-prev-next-button').hide()
+
+
 
 });
 
