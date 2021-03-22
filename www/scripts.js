@@ -100,8 +100,10 @@ socket.on('tree', function(data) {
             else $('.flickity-prev-next-button.next').removeClass('close')
                 // console.log(flkty.selectedIndex, flkty.cells.length - 1)
 
-            $('.close').on('click touchstart', function(e) {
+            $('.close').on('click', function(e) {
                 $('.main-carousel').flickity('select', 0)
+                $('.close').unbind()
+                $('.debug').append('select 0 : ' + e.type + ' <br\>');
             });
         });
 
@@ -119,10 +121,11 @@ socket.on('tree', function(data) {
             if (isNumeric(l.split('_')[0])) l = l.split('_')[1]
 
             // Lang btn
-            $('<div>').addClass('lang-item').html(l).appendTo(menu).on('click touchstart', () => {
+            $('<div>').addClass('lang-item').html(l).appendTo(menu).on('click', (e) => {
                 $('.main-carousel').hide().removeClass('is-active')
                 $('.flickity-prev-next-button.next').hide()
                 $('.carousel-' + l.replace(' ', '')).show().flickity('select', 1).addClass('is-active')
+                $('.debug').append('select 1 : ' + e.type + ' <br\>');
             })
         }
 
@@ -143,7 +146,6 @@ var inactivityTime = function() {
 
     window.onload = timerReset;
     document.onkeypress = timerReset;
-    document.onmousemove = timerReset;
     document.onmousedown = timerReset;
     document.ontouchstart = timerReset;
     document.onclick = timerReset;
@@ -155,8 +157,9 @@ var inactivityTime = function() {
         $('.main-carousel').flickity('select', 0)
     };
 
-    function timerReset() {
+    function timerReset(e) {
         // console.log("Reseting timer");
+        // $('.debug').append('Timer reset : ' + e.type + ' <br\>');
         clearTimeout(timer);
         timer = setTimeout(timerElapsed, 1 * 60 * 1000); // 1 mins
     }

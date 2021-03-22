@@ -13,6 +13,19 @@
     src: url('fonts/GGcanut_Regular.otf');
 }
 
+.debug {
+    position: fixed;
+    opacity: 0.5;
+    z-index: 1000;
+    background-color: aliceblue;
+    color: black;
+    max-height: 30%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column-reverse;
+    display: none;
+}
+
 body {
     padding: 0;
     margin: 0;
