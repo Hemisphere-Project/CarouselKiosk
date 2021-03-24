@@ -73,6 +73,8 @@ socket.on('tree', function(data) {
         });
 
         carousel.on('change.flickity', function(event, index) {
+
+
             // VIDEO playback
             $('video').each((i, d) => {
                 d.pause()
@@ -95,10 +97,10 @@ socket.on('tree', function(data) {
 
             $('.close').unbind()
 
-            var flkty = carousel.data('flickity')
+            var flkty = $(this).data('flickity')
             if (flkty.selectedIndex == flkty.cells.length - 1) $('.flickity-prev-next-button.next').addClass('close')
             else $('.flickity-prev-next-button.next').removeClass('close')
-                // console.log(flkty.selectedIndex, flkty.cells.length - 1)
+            console.log(flkty.selectedIndex, flkty.cells.length - 1)
 
             $('.close').on('click', function(e) {
                 $('.main-carousel').flickity('select', 0)
@@ -113,7 +115,7 @@ socket.on('tree', function(data) {
 
     // Add menu to first media of each gallery
     $('.main-carousel').get().forEach(function(entry, index, array) {
-        var menu = $('<div>').addClass('lang-menu').appendTo(accueil)
+        var menu = $('<div>').addClass('lang-menu') //.appendTo(accueil)
 
         for (let lang in data) {
             // remove x_ 
@@ -122,10 +124,30 @@ socket.on('tree', function(data) {
 
             // Lang btn
             $('<div>').addClass('lang-item').html(l).appendTo(menu).on('click', (e) => {
+
+                //$('.flickity-prev-next-button.next').hide()
+
+                var target = $('.carousel-' + l.replace(' ', ''))
+
+                console.log(l)
+
                 $('.main-carousel').hide().removeClass('is-active')
-                $('.flickity-prev-next-button.next').hide()
-                $('.carousel-' + l.replace(' ', '')).show().flickity('select', 1).addClass('is-active')
-                $('.debug').append('select 1 : ' + e.type + ' <br\>');
+                target.show().addClass('is-active')
+                target.flickity('select', 1)
+
+                // if (target.hasClass('is-active')) {
+                //     target.flickity('select', 1)
+                //     $('.debug').append('select 1 : ' + e.type + ' <br\>')
+                // } else {
+                //     $('.lang-menu').hide()
+                //     $('.main-carousel').hide().removeClass('is-active')
+                //     target.show().addClass('is-active')
+                //     setTimeout(() => {
+                //         target.flickity('select', 1)
+                //         $('.lang-menu').show()
+                //     }, 2000)
+                // }
+
             })
         }
 
