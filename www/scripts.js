@@ -5,6 +5,14 @@ function isNumeric(str) {
 }
 
 
+// Prevent ZOOM
+document.addEventListener('touchmove', e => {
+    if (e.touches.length > 1) {
+        e.preventDefault();
+    }
+}, { passive: false })
+
+
 var socket = io();
 
 socket.on('tree', function(data) {
